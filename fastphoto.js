@@ -2,11 +2,11 @@ USERID_FAST_CACHE = {
   '-shu-': '80879993@N00'
 }
 
-substitute = function(str, sub) {
-    return str.replace(/\{(.+?)\}/g, function($0, $1) {
-        return $1 in sub ? sub[$1] : $0;
-    });
-};
+PHOTO_TEMPLATE =
+  '<a id="photo/{id}" class="photo" target="_blank" href="{href}">\
+    <img title="{title}" src="{src}"></img>\
+    <div class="label">{title}</div>\
+  </a>'
 
 window.fastphoto = function(el, api_key, user_name, options) {
   options = $.extend({
@@ -20,7 +20,7 @@ window.fastphoto = function(el, api_key, user_name, options) {
   init = function() {
     user_id = USERID_FAST_CACHE[user_name]
     if (user_id) {
-      load_photos()
+      start()
     }
     else {
       url = flickr_get('flickr.people.findByUsername', {
@@ -28,7 +28,7 @@ window.fastphoto = function(el, api_key, user_name, options) {
       }, function(data) {
         user_id = data.user.id
         if (user_id) {
-          load_photos()
+          start()
         } else {
           $el.text("invalid user id")
         }
@@ -36,10 +36,25 @@ window.fastphoto = function(el, api_key, user_name, options) {
     }
   }
 
+  start = function() {
+    setInterval(infinite_scroll, 500)
+    $(window).scroll(infinite_scroll)
+    load_photos()
+  }
+
+  infinite_scroll = function() {
+    runway = $(document).height() - ($(window).scrollTop() + $(window).height())
+    if (runway < ($(window).height() * 2)) {
+      load_photos()
+    }
+  }
+
+  loading = false
   load_photos = function() {
-    if (max_pages != null && current_page > max_pages) {
+    if (loading || (max_pages != null && current_page > max_pages)) {
       return
     }
+    loading = true
 
     flickr_get('flickr.people.getPublicPhotos', {
       user_id: user_id,
@@ -57,12 +72,13 @@ window.fastphoto = function(el, api_key, user_name, options) {
           server: photo.server
         })
 
-        PHOTO_TEMPLATE =
-          '<a class="photo" target="_blank" href="{href}">\
-            <img title="{title}" src="{src}"></img>\
-            <div class="label">{title}</div>\
-          </a>'
+
+        // Clean up titles
+        if (photo.title.indexOf('IMG_') == 0) { photo.title = '' }
+
+
         html = substitute(PHOTO_TEMPLATE, {
+          id: photo.id,
           href: 'http://www.flickr.com/photos/' + user_id + '/' + photo.id,
           src: photo_src,
           title: photo.title
@@ -70,6 +86,7 @@ window.fastphoto = function(el, api_key, user_name, options) {
 
         $(html).appendTo($el)
       }
+      loading = false
     })
 
   }
@@ -94,4 +111,8 @@ window.fastphoto = function(el, api_key, user_name, options) {
   init()
 }
 
-
+substitute = function(str, sub) {
+    return str.replace(/\{(.+?)\}/g, function($0, $1) {
+        return $1 in sub ? sub[$1] : $0;
+    });
+};
