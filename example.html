@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+    <script src='fastphoto.js'></script>
+    <style>
+      body {
+        width: 1024px;
+        margin: 20px auto;
+        text-align: center;
+        font-family: Helvetica, Arial, sans-serif;
+        color: #CCC;
+        background: black;
+      }
+      a {
+        text-decoration: none;
+        color: #CCC;
+      }
+      a:hover {
+        color: #DDD;
+      }
+      .photo {
+        display: block;
+        margin-bottom: 50px
+      }
+      .photo .label {
+        margin-top: 5px;
+        font-size: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1><a href="http://shuw.github.com/">shuw</a></h1>
+    <div id="photos"></div>
+    <script>
+      fastphoto($('#photos')[0], 'c4c6a7f0f71ec384e85e2eeb778c465e', '-shu-')
+    </script>
+  </body>
+</html>
+
