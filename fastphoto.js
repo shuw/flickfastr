@@ -13,7 +13,7 @@ window.fastphoto = function(el, api_key, user_name, options) {
   $el = $(el)
   user_id = null, current_page = 1, max_pages = null
 
-  init = function() {
+  resolve_user_name = function() {
     url = flickr_get('flickr.people.findByUsername', {
       username: user_name
     }, function(data) {
@@ -92,7 +92,7 @@ window.fastphoto = function(el, api_key, user_name, options) {
     })
   }
 
-  init()
+  resolve_user_name()
 }
 
 substitute = function(str, sub) {
