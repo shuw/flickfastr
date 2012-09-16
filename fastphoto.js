@@ -22,7 +22,7 @@ jQuery.fn.fastphoto = function(identifier, api_key, options) {
   }
 
   load_photos = function() {
-    if (!loading_photos && !(max_pages != null && current_page > max_pages)) {
+    if (!loading_photos && !(max_pages !== null && current_page > max_pages)) {
       loading_photos = true
 
       flickr_get('flickr.people.getPublicPhotos', {
@@ -35,13 +35,13 @@ jQuery.fn.fastphoto = function(identifier, api_key, options) {
           $(substitute(PHOTO_HTML, {
             id: photo.id,
             href: substitute(FLICKR_PHOTO_URL, {user_id: user_id, id: photo.id}),
-            title: (photo.title.indexOf('IMG_') != 0) ? photo.title : '',
+            title: (photo.title.indexOf('IMG_') !== 0) ? photo.title : '',
             src: substitute(FLICKR_IMG_URL, {
               id: photo.id,
               secret: photo.secret,
               server: photo.server,
               size: options.photo_size
-            }),
+            })
           })).appendTo($el)
         })
         loading_photos = false
