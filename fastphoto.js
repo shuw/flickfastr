@@ -1,6 +1,6 @@
 (function() {
 
-  window.fastphoto = function(el, user_name, api_key, options) {
+  window.fastphoto = function(el, identifier, api_key, options) {
     // Sizes defined [here](http://www.flickr.com/services/api/misc.urls.html)
     options = $.extend({ photo_size: 'b'}, options)
     photo_url_format = "http://farm9.staticflickr.com/{server}/{id}_{secret}_" + options.photo_size + ".jpg"
@@ -10,12 +10,12 @@
 
     resolve_user_name = function() {
       url = flickr_get('flickr.people.findByUsername', {
-        username: user_name
+        username: identifier
       }, function(data) {
         if (data.user.id) {
           start_for_user(data.user.id)
         } else {
-          $el.text("could not find user name: " + user_name)
+          $el.text("could not find user name: " + identifier)
         }
       })
     }
@@ -88,7 +88,11 @@
       })
     }
 
-    resolve_user_name()
+    if (options.identifier_type == 'user_id') {
+      start_for_user(identifier)
+    } else {
+      resolve_user_name()
+    }
   }
 
 
