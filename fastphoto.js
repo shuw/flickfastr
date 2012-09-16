@@ -4,7 +4,7 @@ jQuery.fn.fastphoto = function(identifier, api_key, options) {
   FLICKR_API_URL = 'http://api.flickr.com/services/rest/?format=json'
   PHOTO_HTML = '<a id="photo/{id}" class="photo" target="_blank" href="{href}">\
       <img title="{title}" src="{src}"></img>\
-      <div class="label">{title}</div>\
+      <span class="title">{title}</span>\
     </a>'
 
   substitute = function(str, sub) {
