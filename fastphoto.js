@@ -5,29 +5,13 @@
       photo_size: 'b',                  // Sizes defined [here](http://www.flickr.com/services/api/misc.urls.html)
       identifier_type: 'user_name'      // ['user_id', 'user_name'] supported
     }, options)
-    photo_url_format = "http://farm9.staticflickr.com/{server}/{id}_{secret}_" + options.photo_size + ".jpg"
 
-    $el = $(el)
-    user_id = null, current_page = 1, max_pages = null, loading_photos = false
-
-    resolve_user_name = function() {
-      url = flickr_get('flickr.people.findByUsername', {
-        username: identifier
-      }, function(data) {
-        if (data.user.id) {
-          start_for_user(data.user.id)
-        } else {
-          $el.text("could not find user name: " + identifier)
-        }
-      })
-    }
+    $el = $(el), user_id = null, current_page = 1, max_pages = null, loading_photos = false
 
     start_for_user = function(id) {
       user_id = id
       $(window).scroll(maintain_runway)
-      // Also periodically check in case load_photos didn't get enough
-      // or we we tried to load_photos while a previous load was already in progress
-      setInterval(maintain_runway, 500)
+      setInterval(maintain_runway, 500) // Also periodically check in case load_photos didn't get enough
       load_photos()
     }
 
@@ -39,55 +23,41 @@
     }
 
     load_photos = function() {
-      if (loading_photos || (max_pages != null && current_page > max_pages)) return
-      loading_photos = true
+      if (!loading_photos && !(max_pages != null && current_page > max_pages)) {
+        loading_photos = true
 
-      flickr_get('flickr.people.getPublicPhotos', {
-        user_id: user_id,
-        page: current_page++
-      }, function(data) {
-        if (max_pages == null) max_pages = data.photos.pages
+        flickr_get('flickr.people.getPublicPhotos', {
+          user_id: user_id,
+          page: current_page++
+        }, function(data) {
+          max_pages = data.photos.pages
 
-        for (var i = 0; i < data.photos.photo.length; i++) {
-          photo = data.photos.photo[i]
-          photo_src = substitute(photo_url_format, {
-            id: photo.id,
-            secret: photo.secret,
-            server: photo.server
+          $(data.photos.photo).each(function(i, photo) {
+            $(substitute(PHOTO_TEMPLATE, {
+              id: photo.id,
+              href: substitute(FLICKR_PHOTO_URL, {user_id: user_id, id: photo.id}),
+              title: (photo.title.indexOf('IMG_') != 0) ? photo.title : '',
+              src: substitute(FLICKR_IMG_URL, {
+                id: photo.id,
+                secret: photo.secret,
+                server: photo.server,
+                size: options.photo_size
+              }),
+            })).appendTo($el)
           })
-
-          // Clean up titles
-          if (photo.title.indexOf('IMG_') == 0) photo.title = ''
-
-          html = substitute(PHOTO_TEMPLATE, {
-            id: photo.id,
-            href: substitute(FLICKR_PHOTO_URL, {user_id: user_id, id: photo.id}),
-            src: photo_src,
-            title: photo.title
-          })
-
-          $(html).appendTo($el)
-        }
-        loading_photos = false
-      })
-
+          loading_photos = false
+        })
+      }
     }
 
     flickr_get = function(method, params, callback) {
-      params = $.extend({
+      url = FLICKR_API_URL + "&" + $.param($.extend({
         "api_key": api_key,
         "method": method,
         "per_page": 10
-      }, params)
+      }, params))
 
-      $.ajax(FLICKR_API_URL + "&" + $.param(params), {
-        dataType: "jsonp",
-        cache: true,
-        jsonpCallback: "jsonFlickrApi",
-        success: function(data, status) {
-          callback(data, status)
-        }
-      })
+      $.ajax(url, {dataType: "jsonp", jsonpCallback: "jsonFlickrApi", cache: true, success: callback})
     }
 
     switch (options.identifier_type) {
@@ -95,14 +65,22 @@
         start_for_user(identifier)
         break
       case 'user_name':
-        resolve_user_name()
+        url = flickr_get('flickr.people.findByUsername', {
+          username: identifier
+        }, function(data) {
+          if (data.user.id) {
+            start_for_user(data.user.id)
+          } else {
+            $el.text("could not find user name: " + identifier)
+          }
+        })
         break
       default:
         throw "Unsupported identifier type: " + options.identifier_type
     }
   }
 
-
+  FLICKR_IMG_URL = 'http://farm9.staticflickr.com/{server}/{id}_{secret}_{size}.jpg'
   FLICKR_PHOTO_URL = 'http://www.flickr.com/photos/{user_id}/{id}'
   FLICKR_API_URL = 'http://api.flickr.com/services/rest/?format=json'
   PHOTO_TEMPLATE =
