@@ -10,3 +10,5 @@ Usage
 
     // start fastphoto on {dom_element} for {user_name} using {api_key}
     fastphoto({dom_element}, {user_name}, {api_key})
+
+To create a Flickr API key, follow [this link](http://www.flickr.com/services/apps/create/apply). It's quite easy.
