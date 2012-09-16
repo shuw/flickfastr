@@ -52,26 +52,25 @@
       }
     }
 
-    maintain_runway = function() {
-      runway = $(document).height() - ($(window).scrollTop() + $(window).height())
-      if (runway < ($(window).height() * 2)) {
-        load_photos()
-      }
-    }
-
     start_for_user = function(id) {
-      user_id = id
+      user_id = id, maintain_runway = function() {
+        runway = $document.height() - ($(window).scrollTop() + $(window).height())
+        if (runway < $window.height() * 2) {
+          load_photos()
+        }
+      }
       $(window).scroll(maintain_runway)
       setInterval(maintain_runway, 500) // Also periodically check in case load_photos didn't get enough
       load_photos()
     }
 
     options = $.extend({
-      photo_size: 'b',                  // Sizes defined [here](http://www.flickr.com/services/api/misc.urls.html)
+      photo_size: 'b',                  // Sizes defined here: http://www.flickr.com/services/api/misc.urls.html
       identifier_type: 'user_name'      // ['user_id', 'user_name'] supported
     }, options)
 
-    $el = $(el), user_id = null, current_page = 1, max_pages = null, loading_photos = false
+    $el = $(el), $window = $(window), $document = $(document)
+    user_id = null, current_page = 1, max_pages = null, loading_photos = false
 
     switch (options.identifier_type) {
       case 'user_id':
