@@ -1,9 +1,9 @@
 Fastphoto
 =========
 
-A minimalistic, fast JavaScript photo viewer with infinite scroll for Flickr because Flickr's webpage is slow and clunky.
+A minimalistic and fast JavaScript photo viewer with infinite scroll for Flickr. Because Flickr's web UI is slow and clunky.
 
-See [a live example](http://shuw.github.com/photos).
+It has a [built in](https://github.com/shuw/fastphoto/blob/master/fastphoto.js) API client, renderer and infite scroll handler. See [a demo](http://shuw.github.com/photos).
 
 Usage
 =========

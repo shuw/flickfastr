@@ -1,3 +1,4 @@
+// fastphoto requires jQuery
 (function() {
 
   FLICKR_IMG_URL = 'http://farm9.staticflickr.com/{server}/{id}_{secret}_{size}.jpg'
