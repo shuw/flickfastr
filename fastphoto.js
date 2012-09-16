@@ -1,7 +1,3 @@
-USERID_FAST_CACHE = {
-  '-shu-': '80879993@N00'
-}
-
 PHOTO_TEMPLATE =
   '<a id="photo/{id}" class="photo" target="_blank" href="{href}">\
     <img title="{title}" src="{src}"></img>\
@@ -18,22 +14,16 @@ window.fastphoto = function(el, api_key, user_name, options) {
   user_id = null, current_page = 1, max_pages = null
 
   init = function() {
-    user_id = USERID_FAST_CACHE[user_name]
-    if (user_id) {
-      start()
-    }
-    else {
-      url = flickr_get('flickr.people.findByUsername', {
-        username: user_name
-      }, function(data) {
-        user_id = data.user.id
-        if (user_id) {
-          start()
-        } else {
-          $el.text("invalid user id")
-        }
-      })
-    }
+    url = flickr_get('flickr.people.findByUsername', {
+      username: user_name
+    }, function(data) {
+      user_id = data.user.id
+      if (user_id) {
+        start()
+      } else {
+        $el.text("invalid user id")
+      }
+    })
   }
 
   start = function() {
@@ -51,18 +41,14 @@ window.fastphoto = function(el, api_key, user_name, options) {
 
   loading = false
   load_photos = function() {
-    if (loading || (max_pages != null && current_page > max_pages)) {
-      return
-    }
+    if (loading || (max_pages != null && current_page > max_pages)) return
     loading = true
 
     flickr_get('flickr.people.getPublicPhotos', {
       user_id: user_id,
       page: current_page++
     }, function(data) {
-      if (max_pages == null) {
-        max_pages = data.photos.pages
-      }
+      if (max_pages == null) max_pages = data.photos.pages
 
       for (var i = 0; i < data.photos.photo.length; i++) {
         photo = data.photos.photo[i]
@@ -72,10 +58,8 @@ window.fastphoto = function(el, api_key, user_name, options) {
           server: photo.server
         })
 
-
         // Clean up titles
-        if (photo.title.indexOf('IMG_') == 0) { photo.title = '' }
-
+        if (photo.title.indexOf('IMG_') == 0) photo.title = ''
 
         html = substitute(PHOTO_TEMPLATE, {
           id: photo.id,
@@ -97,8 +81,8 @@ window.fastphoto = function(el, api_key, user_name, options) {
       "method": method,
       "per_page": 10
     }, params)
-    url = "http://api.flickr.com/services/rest/?format=json&" + $.param(params)
-    $.ajax(url, {
+
+    $.ajax("http://api.flickr.com/services/rest/?format=json&" + $.param(params), {
       dataType: "jsonp",
       cache: true,
       jsonpCallback: "jsonFlickrApi",
@@ -112,7 +96,7 @@ window.fastphoto = function(el, api_key, user_name, options) {
 }
 
 substitute = function(str, sub) {
-    return str.replace(/\{(.+?)\}/g, function($0, $1) {
-        return $1 in sub ? sub[$1] : $0;
-    });
+  return str.replace(/\{(.+?)\}/g, function($0, $1) {
+    return $1 in sub ? sub[$1] : $0;
+  });
 };
