@@ -1,8 +1,10 @@
 (function() {
 
   window.fastphoto = function(el, identifier, api_key, options) {
-    // Sizes defined [here](http://www.flickr.com/services/api/misc.urls.html)
-    options = $.extend({ photo_size: 'b'}, options)
+    options = $.extend({
+      photo_size: 'b',                  // Sizes defined [here](http://www.flickr.com/services/api/misc.urls.html)
+      identifier_type: 'user_name'      // ['user_id', 'user_name'] supported
+    }, options)
     photo_url_format = "http://farm9.staticflickr.com/{server}/{id}_{secret}_" + options.photo_size + ".jpg"
 
     $el = $(el)
@@ -88,10 +90,15 @@
       })
     }
 
-    if (options.identifier_type == 'user_id') {
-      start_for_user(identifier)
-    } else {
-      resolve_user_name()
+    switch (options.identifier_type) {
+      case 'user_id':
+        start_for_user(identifier)
+        break
+      case 'user_name':
+        resolve_user_name()
+        break
+      default:
+        throw "Unsupported identifier type: " + options.identifier_type
     }
   }
 
