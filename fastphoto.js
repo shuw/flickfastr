@@ -1,6 +1,6 @@
 (function() {
 
-  window.fastphoto = function(el, api_key, user_name, options) {
+  window.fastphoto = function(el, user_name, api_key, options) {
     // Sizes defined [here](http://www.flickr.com/services/api/misc.urls.html)
     options = $.extend({ photo_size: 'b'}, options)
     photo_url_format = "http://farm9.staticflickr.com/{server}/{id}_{secret}_" + options.photo_size + ".jpg"

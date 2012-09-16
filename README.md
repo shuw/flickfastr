@@ -8,5 +8,5 @@ See [a live example](http://shuw.github.com/photos).
 Usage
 =========
 
-    // start fastphoto for {user_name} on {dom_element} using {api_key}
-    fastphoto({dom_element}, {api_key}, {user_name})
+    // start fastphoto on {dom_element} for {user_name} using {api_key}
+    fastphoto({dom_element}, {user_name}, {api_key})
