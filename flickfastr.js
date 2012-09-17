@@ -1,4 +1,4 @@
-jQuery.fn.fastphoto = function(identifier, api_key, options) {
+jQuery.fn.flickfastr = function(identifier, api_key, options) {
   options = $.extend({
     photo_size: 'b',                  // Sizes defined here: http://www.flickr.com/services/api/misc.urls.html
     identifier_type: 'user_name'      // ['user_id', 'user_name'] supported
