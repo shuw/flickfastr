@@ -1,3 +1,6 @@
+//  flickfastr.js (https://github.com/shuw/flickfastr) may be freely distributed under the MIT license.
+//  (c) 2012 Shu Wu
+
 jQuery.fn.flickfastr = function(identifier, api_key, options) {
   options = $.extend({
     photo_size: 'b',                  // Sizes defined here: http://www.flickr.com/services/api/misc.urls.html
