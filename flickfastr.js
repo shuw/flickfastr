@@ -3,12 +3,13 @@
 
 jQuery.fn.flickfastr = function(identifier, api_key, options) {
   options = $.extend({
-    photo_size: 'b',                  // Sizes defined here: http://www.flickr.com/services/api/misc.urls.html
-    identifier_type: 'user_name'      // ['user_id', 'user_name'] supported
+    photo_size: 'b',                    // Sizes defined here: http://www.flickr.com/services/api/misc.urls.html
+    identifier_type: 'user_name',       // ['user_id', 'user_name'] supported
+    lightbox: false                     // Whether to open photos in the lightbox
   }, options)
 
   var FLICKR_IMG_URL = 'http://farm9.staticflickr.com/{server}/{id}_{secret}_{size}.jpg'
-  var FLICKR_PHOTO_URL = 'http://www.flickr.com/photos/{user_id}/{id}'
+  var FLICKR_PHOTO_URL = 'http://www.flickr.com/photos/{user_id}/{id}' + (options.lightbox ? '/lightbox' : '')
   var FLICKR_API_URL = 'http://api.flickr.com/services/rest/?format=json'
   var PHOTO_HTML = '<a id="photo/{id}" class="photo" target="_blank" href="{href}"><img title="{title}" src="{src}"></img><div class="title">{title}</div></a>'
 
