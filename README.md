@@ -11,6 +11,6 @@ usage
 With jQuery and [flickrfastr.js](https://github.com/shuw/flickrfastr/blob/master/flickrfastr.js), add the following to your page.
 
     // start flickrfastr on 'element' for 'user_name' using 'api_key'
-    $(element).flickrfastr(user_name, 'api_key')
+    $(element).flickrfastr(user_name, api_key)
 
 If you need a Flickr API key, follow [this link](http://www.flickr.com/services/apps/create/apply). It's quite easy.
