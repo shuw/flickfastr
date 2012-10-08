@@ -44,7 +44,7 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
 
   show_lightbox = function(photo) {
     // Create lightbox
-    $lightbox = $el.find('#flickfastr-lightbox')
+    $lightbox = $('#flickfastr-lightbox')
     if (!$lightbox.length) {
       $lightbox = $('<div id="flickfastr-lightbox"></div>').css({
         position: 'fixed',
@@ -52,12 +52,12 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
         width: '100%',
         top: 0,
         left: 0
-      }).appendTo($el)
+      }).appendTo('body')
     }
     original_body_overflow = $('body').css('overflow')
     $('body').css('overflow', 'hidden')
     escape_lightbox = function(e) {
-      $lightbox.empty()
+      $lightbox.stop().empty()
       $(document).off('keyup', escape_lightbox)
       $('body').css('overflow', original_body_overflow)
     }
@@ -70,7 +70,7 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     original_height = parseInt(photo.o_height, 10)
     scale = Math.max($(window).width() / original_width, $(window).height() / original_height)
     $photo = create_photo_el(photo, 'o').appendTo($lightbox.empty())
-      .click(function() { $lightbox.empty(); return false; })
+      .click(function() { escape_lightbox(); return false; })
 
     width = Math.floor(scale * original_width)
     height = Math.floor(scale * original_height)
