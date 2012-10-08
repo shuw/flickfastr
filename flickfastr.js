@@ -77,7 +77,8 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     width = Math.floor(scale * parseInt(photo.o_width, 10))
 
     // Create photo
-    $photo = create_photo_el(photo, width > 1024 ? 'o' : 'b')
+    // we use the original photo only if we're using > 1300 pixels... otherwise the 1024 scaled image is good enough
+    $photo = create_photo_el(photo, width > 1300 ? 'o' : 'b')
       .appendTo($lightbox.empty())
       .click(function() { escape_lightbox(); return false; })
     $img = $photo.find('> img').css({width: width + 'px', height: height + 'px'})
