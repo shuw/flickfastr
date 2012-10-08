@@ -97,6 +97,7 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     overflow_x = width - $(window).width()
     if (overflow_x > 0) {
       $img.load(function() {
+        // TODO: this should use CSS transitions where possible
         $lightbox
           .animate({ scrollLeft: overflow_x }, Math.max((overflow_x / 100) * 1000, 2000)) // scroll to left 100 px / second
           .animate({ scrollLeft: overflow_x / 2 }, Math.max((overflow_x / 200) * 1000, 1000)) // scroll back to center 200 px / second
