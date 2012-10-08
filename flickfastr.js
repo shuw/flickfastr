@@ -54,12 +54,17 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
         left: 0
       }).appendTo($el)
     }
+    original_body_overflow = $('body').css('overflow')
+    $('body').css('overflow', 'hidden')
+    escape_lightbox = function(e) {
+      $lightbox.empty()
+      $(document).off('keyup', escape_lightbox)
+      $('body').css('overflow', original_body_overflow)
+    }
+
 
     // Escape lightbox on any key
-    onkeyup = $(document).on('keyup', function(e) {
-      $lightbox.empty()
-      $(document).off('keyup', onkeyup)
-    })
+    $(document).on('keyup', escape_lightbox)
 
     original_width = parseInt(photo.o_width, 10)
     original_height = parseInt(photo.o_height, 10)
