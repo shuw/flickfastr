@@ -43,17 +43,17 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
   }
 
   show_lightbox = function(photo) {
+    // Create lightbox
     $lightbox = $el.find('#flickfastr-lightbox')
     if (!$lightbox.length) {
       $lightbox = $('<div id="flickfastr-lightbox"></div>').css({
         position: 'fixed',
+        'overflow-x': 'scroll',
+        width: '100%',
         top: 0,
         left: 0
       }).appendTo($el)
     }
-
-    original_width = parseInt(photo.o_width, 10)
-    original_height = parseInt(photo.o_height, 10)
 
     // Escape lightbox on any key
     onkeyup = $(document).on('keyup', function(e) {
@@ -61,17 +61,32 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
       $(document).off('keyup', onkeyup)
     })
 
+    original_width = parseInt(photo.o_width, 10)
+    original_height = parseInt(photo.o_height, 10)
     scale = Math.max($(window).width() / original_width, $(window).height() / original_height)
-    create_photo_el(photo, 'o')
-      .appendTo($lightbox.empty())
-      .click(function() {
-        $lightbox.empty()
-        return false
+    $photo = create_photo_el(photo, 'o').appendTo($lightbox.empty())
+      .click(function() { $lightbox.empty(); return false; })
+
+    width = Math.floor(scale * original_width)
+    height = Math.floor(scale * original_height)
+    $img = $photo.find('> img').css({width: width + 'px', height: height + 'px'})
+
+    // Animate panning for Panoramas
+    overflow_x = width - $(window).width()
+    if (overflow_x > 0) {
+      $img.load(function() {
+        $lightbox.animate({
+          scrollLeft: overflow_x
+        }, (overflow_x / 100) * 1000) // scroll speed = 1 second per 100 pixels
+
+        // Stop panning when user tries to scroll
+        $lightbox.on('scroll mousedown DOMMouseScroll mousewheel keyup', function(e) {
+          if (e.which > 0 || e.type === "mousedown" || e.type === "mousewheel") {
+            $lightbox.stop()
+          }
+        })
       })
-      .find('> img').css({
-        width: Math.floor(scale * original_width) + 'px',
-        height: Math.floor(scale * original_height) + 'px'
-      })
+    }
   }
 
   load_photos = function() {
@@ -88,7 +103,8 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
         $(data.photos.photo).each(function(i, photo) {
           $photo = create_photo_el(photo, options.photo_size).appendTo($el)
           if (options.lightbox && photo.media != 'video') {
-            $photo.click(function() {show_lightbox(photo); return false; })
+            $photo.attr('href', '#')
+            $photo.click(function() { show_lightbox(photo); return false; })
           }
         })
         loading_photos = false
