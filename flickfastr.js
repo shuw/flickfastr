@@ -8,10 +8,9 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     lightbox: false                     // Whether to open photos in the lightbox
   }, options)
 
-  var FLICKR_IMG_URL = 'http://farm9.staticflickr.com/{server}/{id}_{secret}_{size}.jpg'
-  var FLICKR_PHOTO_URL = 'http://www.flickr.com/photos/{user_id}/{id}' + (options.lightbox ? '/lightbox' : '')
+  var FLICKR_IMG_URL = 'http://farm9.staticflickr.com/{server}/{id}_{secret}_{size}.{format}'
+  var FLICKR_PHOTO_URL = 'http://www.flickr.com/photos/{user_id}/{id}'
   var FLICKR_API_URL = 'http://api.flickr.com/services/rest/?format=json'
-  var PHOTO_HTML = '<a id="photo/{id}" class="photo" target="_blank" href="{href}"><img title="{title}" src="{src}"></img><div class="title">{title}</div></a>'
 
   var $el = this, $window = $(window), $document = $(document)
   var user_id = null
@@ -28,28 +27,58 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     $.ajax(url, {dataType: "jsonp", jsonpCallback: "jsonFlickrApi", cache: true, success: callback})
   }
 
+  create_photo_el = function(photo, size) {
+    return $(substitute('<a id="photo/{id}" class="photo" target="_blank" href="{href}"><img title="{title}" src="{src}"></img><div class="title">{title}</div></a>', {
+      id: photo.id,
+      href: substitute(FLICKR_PHOTO_URL, {user_id: user_id, id: photo.id}),
+      title: (photo.title.indexOf('IMG_') !== 0) ? photo.title : '',
+      src: substitute(FLICKR_IMG_URL, {
+        id: photo.id,
+        server: photo.server,
+        size: size,
+        secret: size == 'o' ? photo.originalsecret : photo.secret,
+        format: size == 'o' ? photo.originalformat : 'jpg'
+      })
+    }))
+  }
+
+  show_lightbox = function(photo) {
+    $lightbox = $el.find('#flickfastr-lightbox')
+    if (!$lightbox.length) {
+      $lightbox = $('<div id="flickfastr-lightbox"></div>').css({
+        position: 'fixed',
+        top: 0,
+        left: 0
+      }).appendTo($el)
+    }
+
+    original_width = parseInt(photo.o_width, 10)
+    original_height = parseInt(photo.o_height, 10)
+
+
+    scale = Math.max($(window).width() / original_width, $(window).height() / original_height)
+    create_photo_el(photo, 'o').appendTo($lightbox.empty()).find('> img').css({
+      width: Math.floor(scale * original_width) + 'px',
+      height: Math.floor(scale * original_height) + 'px'
+    })
+  }
+
   load_photos = function() {
     if (!loading_photos && !(max_pages !== null && current_page > max_pages)) {
       loading_photos = true
 
       flickr_get('flickr.people.getPublicPhotos', {
         user_id: user_id,
-        page: current_page++
+        page: current_page++,
+        extras: options.lightbox ? 'original_format, media, o_dims' : ''
       }, function(data) {
         max_pages = data.photos.pages
 
         $(data.photos.photo).each(function(i, photo) {
-          $(substitute(PHOTO_HTML, {
-            id: photo.id,
-            href: substitute(FLICKR_PHOTO_URL, {user_id: user_id, id: photo.id}),
-            title: (photo.title.indexOf('IMG_') !== 0) ? photo.title : '',
-            src: substitute(FLICKR_IMG_URL, {
-              id: photo.id,
-              secret: photo.secret,
-              server: photo.server,
-              size: options.photo_size
-            })
-          })).appendTo($el)
+          $photo = create_photo_el(photo, options.photo_size).appendTo($el)
+          if (options.lightbox && photo.media != 'video') {
+            $photo.click(function() {show_lightbox(photo); return false; })
+          }
         })
         loading_photos = false
       })
