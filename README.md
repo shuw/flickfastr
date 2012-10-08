@@ -1,7 +1,7 @@
 flickfastr
 =========
 
-A minimalistic and fast JavaScript photo viewer with infinite scroll for Flickr because its web UI is slow and clunky.
+A minimalistic and fast JavaScript photo library with panning panorama lightbox and infinite scroll. Uses Flickr API.
 
 It has a built in API client, renderer and infite scroll handler. See [a demo](http://shuw.github.com/photos).
 
