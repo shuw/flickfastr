@@ -49,6 +49,8 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
       $lightbox = $('<div id="flickfastr-lightbox"></div>').css({
         position: 'fixed',
         'overflow-x': 'scroll',
+        'background-color': 'black',
+        'text-align': 'center',
         width: '100%',
         top: 0,
         left: 0
@@ -69,11 +71,10 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     $(document).on('keyup', escape_lightbox)
 
     // Scale image to fill height
-    original_width = parseInt(photo.o_width, 10)
     original_height = parseInt(photo.o_height, 10)
-    scale = Math.max($(window).width() / original_width, $(window).height() / original_height)
-    width = Math.floor(scale * original_width)
+    scale = $(window).height() / original_height
     height = Math.floor(scale * original_height)
+    width = Math.floor(scale * parseInt(photo.o_width, 10))
 
     // Create photo
     $photo = create_photo_el(photo, 'o')
