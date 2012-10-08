@@ -82,6 +82,15 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
       .click(function() { escape_lightbox(); return false; })
     $img = $photo.find('> img').css({width: width + 'px', height: height + 'px'})
 
+    $('<a class="view_on_flickr" target="_blank">view on flickr</a>')
+      .attr('href', $photo.attr('href'))
+      .appendTo($lightbox)
+      .css({
+        position: 'fixed',
+        bottom: '5px',
+        right: '10px'
+      })
+
     // Animate panning for Panoramas
     overflow_x = width - $(window).width()
     if (overflow_x > 0) {
@@ -114,7 +123,6 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
         $(data.photos.photo).each(function(i, photo) {
           $photo = create_photo_el(photo, options.photo_size).appendTo($el)
           if (options.lightbox && photo.media != 'video') {
-            $photo.attr('href', '#')
             $photo.click(function() { show_lightbox(photo); return false; })
           }
         })
