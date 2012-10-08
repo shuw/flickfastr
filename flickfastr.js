@@ -30,7 +30,8 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
   create_photo_el = function(photo, size) {
     return $(substitute('<a id="photo/{id}" class="photo" target="_blank" href="{href}"><img title="{title}" src="{src}"></img><div class="title">{title}</div></a>', {
       id: photo.id,
-      href: substitute(FLICKR_PHOTO_URL, {user_id: user_id, id: photo.id}),
+      href: substitute(FLICKR_PHOTO_URL, {user_id: user_id, id: photo.id}) +
+            (photo.media == 'video' ? '/lightbox' : ''),
       title: (photo.title.indexOf('IMG_') !== 0) ? photo.title : '',
       src: substitute(FLICKR_IMG_URL, {
         id: photo.id,
