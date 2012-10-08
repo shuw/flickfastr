@@ -54,26 +54,31 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
         left: 0
       }).appendTo('body')
     }
+
+    // Disable body scrolling since lightbox is modal
     original_body_overflow = $('body').css('overflow')
     $('body').css('overflow', 'hidden')
+
     escape_lightbox = function(e) {
       $lightbox.stop().empty()
       $(document).off('keyup', escape_lightbox)
       $('body').css('overflow', original_body_overflow)
     }
 
-
     // Escape lightbox on any key
     $(document).on('keyup', escape_lightbox)
 
+    // Scale image to fill height
     original_width = parseInt(photo.o_width, 10)
     original_height = parseInt(photo.o_height, 10)
     scale = Math.max($(window).width() / original_width, $(window).height() / original_height)
-    $photo = create_photo_el(photo, 'o').appendTo($lightbox.empty())
-      .click(function() { escape_lightbox(); return false; })
-
     width = Math.floor(scale * original_width)
     height = Math.floor(scale * original_height)
+
+    // Create photo
+    $photo = create_photo_el(photo, 'o')
+      .appendTo($lightbox.empty())
+      .click(function() { escape_lightbox(); return false; })
     $img = $photo.find('> img').css({width: width + 'px', height: height + 'px'})
 
     // Animate panning for Panoramas
