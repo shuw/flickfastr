@@ -8,9 +8,11 @@ It has a built in API client, renderer and infite scroll handler. See [a demo](h
 usage
 =========
 
-With jQuery and [flickrfastr.js](https://github.com/shuw/flickrfastr/blob/master/flickrfastr.js), add the following to your page.
+With jQuery and [flickrfastr.js](https://github.com/shuw/flickfastr/blob/master/flickfastr.js), add the following to your page.
 
-    // start flickrfastr on 'element' for 'user_name' using 'api_key'
-    $(element).flickrfastr(user_name, api_key)
+    // start flickrfastr on 'element' for 'user_name' using 'api_key' with optional 'options'
+    $(element).flickrfastr(user_name, api_key, [options])
+
+Options are documented in [the source](https://github.com/shuw/flickfastr/blob/master/flickfastr.js#L5).
 
 If you need a Flickr API key, follow [this link](http://www.flickr.com/services/apps/create/apply). It's quite easy.
