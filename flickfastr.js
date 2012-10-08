@@ -62,14 +62,15 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     original_body_overflow = $('body').css('overflow')
     $('body').css('overflow', 'hidden')
 
-    escape_lightbox = function(e) {
+    escape_lightbox = function() {
       $lightbox.stop(true).empty()
-      $(document).off('keyup', escape_lightbox)
+      $(document).off('keyup', on_key_up)
       $('body').css('overflow', original_body_overflow)
     }
 
-    // Escape lightbox on any key
-    $(document).on('keyup', escape_lightbox)
+    // Escape lightbox on 'esc' key
+    on_key_up = function(e) { if (e.keyCode == 27) escape_lightbox() }
+    $(document).on('keyup', on_key_up)
 
     // Scale image to fill height
     original_height = parseInt(photo.o_height, 10)
@@ -82,6 +83,7 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     $photo = create_photo_el(photo, width > 1300 ? 'o' : 'b')
       .appendTo($lightbox.empty())
       .click(function() { escape_lightbox(); return false; })
+      .focus()
     $img = $photo.find('> img').css({width: width + 'px', height: height + 'px'})
 
     $('<a class="view_on_flickr" target="_blank">view on flickr</a>')
@@ -103,7 +105,7 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
           .animate({ scrollLeft: overflow_x / 2 }, Math.max((overflow_x / 200) * 1000, 1000)) // scroll back to center 200 px / second
 
         // Stop panning when user tries to scroll
-        $lightbox.on('scroll mousedown DOMMouseScroll mousewheel keyup', function(e) {
+        $lightbox.on('scroll mousedown DOMMouseScroll mousewheel keydown', function(e) {
           if (e.which > 0 || e.type === "mousedown" || e.type === "mousewheel") {
             $lightbox.stop(true)
           }
