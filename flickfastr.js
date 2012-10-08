@@ -108,8 +108,8 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
           .animate({ scrollLeft: overflow_x / 2 }, Math.max((overflow_x / 200) * 1000, 1000)) // scroll back to center 200 px / second
 
         // Stop panning when user tries to scroll
-        $lightbox.on('scroll mousedown DOMMouseScroll mousewheel keydown', function(e) {
-          if (e.which > 0 || e.type === "mousedown" || e.type === "mousewheel") {
+        $lightbox.on('scroll mousedown DOMMouseScroll mousewheel keydown touchstart', function(e) {
+          if (e.which > 0 || e.type === "mousedown" || e.type === "mousewheel" || e.type == "touchstart") {
             $lightbox.stop(true)
           }
         })
