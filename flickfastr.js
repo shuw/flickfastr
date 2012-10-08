@@ -62,7 +62,7 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     $('body').css('overflow', 'hidden')
 
     escape_lightbox = function(e) {
-      $lightbox.stop().empty()
+      $lightbox.stop(true).empty()
       $(document).off('keyup', escape_lightbox)
       $('body').css('overflow', original_body_overflow)
     }
@@ -103,7 +103,7 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
         // Stop panning when user tries to scroll
         $lightbox.on('scroll mousedown DOMMouseScroll mousewheel keyup', function(e) {
           if (e.which > 0 || e.type === "mousedown" || e.type === "mousewheel") {
-            $lightbox.stop()
+            $lightbox.stop(true)
           }
         })
       })
