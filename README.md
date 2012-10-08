@@ -8,10 +8,10 @@ See [a demo](http://shuw.github.com/photos).
 usage
 =========
 
-With jQuery and [flickrfastr.js](https://github.com/shuw/flickfastr/blob/master/flickfastr.js) included, start flickfastr:
+With jQuery and [flickrfastr.js](https://github.com/shuw/flickfastr/blob/master/flickfastr.js) included on your webpage, start flickfastr:
 
-    // start flickrfastr on 'element' for 'user_name' using 'api_key' with optional 'options'
-    $(element).flickrfastr(user_name, api_key, [options])
+    // start flickrfastr on element for user_name using api_key with optional option params
+    $(element).flickrfastr(user_name, api_key [, options])
 
 Option parameters are [documented at the source](https://github.com/shuw/flickfastr/blob/master/flickfastr.js#L5).
 
