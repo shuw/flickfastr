@@ -52,7 +52,9 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
         'overflow-x': 'scroll',
         'background-color': 'black',
         'text-align': 'center',
+        'overflow-y': 'hidden',
         width: '100%',
+        height: '100%',
         top: 0,
         left: 0
       }).appendTo('body')
@@ -63,10 +65,11 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     $('body').css('overflow', 'hidden')
 
     escape_lightbox = function() {
-      $lightbox.stop(true).empty()
+      $lightbox.hide().stop(true).empty()
       $(document).off('keyup', on_key_up)
       $('body').css('overflow', original_body_overflow)
     }
+    $lightbox.empty().show()
 
     // Escape lightbox on 'esc' key
     on_key_up = function(e) { if (e.keyCode == 27) escape_lightbox() }
@@ -80,11 +83,11 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
 
     // Create photo
     // we use the original photo only if we're using > 1300 pixels... otherwise the 1024 scaled image is good enough
-    $photo = create_photo_el(photo, width > 1300 ? 'o' : 'b')
-      .appendTo($lightbox.empty())
+    $img = create_photo_el(photo, width > 1300 ? 'o' : 'b')
+      .find('img').appendTo($lightbox)
       .click(function() { escape_lightbox(); return false; })
       .focus()
-    $img = $photo.find('> img').css({width: width + 'px', height: height + 'px'})
+    $img.css({width: width + 'px', height: height + 'px'})
 
     $('<a class="view_on_flickr" target="_blank">view on flickr</a>')
       .attr('href', $photo.attr('href'))
