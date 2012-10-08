@@ -55,12 +55,23 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     original_width = parseInt(photo.o_width, 10)
     original_height = parseInt(photo.o_height, 10)
 
+    // Escape lightbox on any key
+    onkeyup = $(document).on('keyup', function(e) {
+      $lightbox.empty()
+      $(document).off('keyup', onkeyup)
+    })
 
     scale = Math.max($(window).width() / original_width, $(window).height() / original_height)
-    create_photo_el(photo, 'o').appendTo($lightbox.empty()).find('> img').css({
-      width: Math.floor(scale * original_width) + 'px',
-      height: Math.floor(scale * original_height) + 'px'
-    })
+    create_photo_el(photo, 'o')
+      .appendTo($lightbox.empty())
+      .click(function() {
+        $lightbox.empty()
+        return false
+      })
+      .find('> img').css({
+        width: Math.floor(scale * original_width) + 'px',
+        height: Math.floor(scale * original_height) + 'px'
+      })
   }
 
   load_photos = function() {
