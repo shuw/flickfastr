@@ -97,8 +97,8 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     if (overflow_x > 0) {
       $img.load(function() {
         $lightbox
-          .animate({ scrollLeft: overflow_x }, (overflow_x / 100) * 1000) // scroll to left 100 px / second
-          .animate({ scrollLeft: overflow_x / 2 }, (overflow_x / 200) * 1000) // scroll back to center 200 px / second
+          .animate({ scrollLeft: overflow_x }, Math.max((overflow_x / 100) * 1000, 2000)) // scroll to left 100 px / second
+          .animate({ scrollLeft: overflow_x / 2 }, Math.max((overflow_x / 200) * 1000, 1000)) // scroll back to center 200 px / second
 
         // Stop panning when user tries to scroll
         $lightbox.on('scroll mousedown DOMMouseScroll mousewheel keyup', function(e) {
