@@ -83,8 +83,8 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
 
     // Create photo
     // we use the original photo only if we're using > 1300 pixels... otherwise the 1024 scaled image is good enough
-    $img = create_photo_el(photo, width > 1300 ? 'o' : 'b')
-      .find('img').appendTo($lightbox)
+    $photo = create_photo_el(photo, width > 1300 ? 'o' : 'b')
+    $img = $photo.find('img').appendTo($lightbox)
       .click(function() { escape_lightbox(); return false; })
       .focus()
     $img.css({width: width + 'px', height: height + 'px'})
@@ -129,7 +129,7 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
         max_pages = data.photos.pages
 
         $(data.photos.photo).each(function(i, photo) {
-          $photo = create_photo_el(photo, options.photo_size).appendTo($el)
+          var $photo = create_photo_el(photo, options.photo_size).appendTo($el)
           if (options.lightbox && photo.media != 'video') {
             $photo.click(function() { show_lightbox(photo); return false; })
           }
