@@ -2,8 +2,13 @@
 //  (c) 2012 Shu Wu
 
 jQuery.fn.flickfastr = function(identifier, api_key, options) {
+  // special case iPhone as non-retina so we don't download big images over slow connections
+  var devicePixelRatio = (!window.navigator.userAgent.match(/iPhone/i) && window.devicePixelRatio) || 1
+  var retina = devicePixelRatio >= 2
+
   options = $.extend({
-    photo_size: 'b',                    // Sizes defined here: http://www.flickr.com/services/api/misc.urls.html
+    viewer_width: 1024,
+    photo_size: retina ? 'k' : 'b',     // Sizes defined here: http://www.flickr.com/services/api/misc.urls.html
     identifier_type: 'user_name',       // ['user_id', 'user_name'] supported
     lightbox: true                      // Whether to open photos using the panorama-enabled lightbox
   }, options)
@@ -28,18 +33,30 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
   }
 
   create_photo_el = function(photo, size) {
-    return $(substitute('<a id="photo/{id}" class="photo" target="_blank" href="{href}"><img title="{title}" src="{src}"></img><div class="title">{title}</div></a>', {
-      id: photo.id,
-      href: substitute(FLICKR_PHOTO_URL, {user_id: user_id, id: photo.id}) +
-            (photo.media == 'video' ? '/lightbox' : ''),
-      title: (photo.title.indexOf('IMG_') !== 0) ? photo.title : '',
-      src: substitute(FLICKR_IMG_URL, {
+    var url
+    if (size == 'k') {
+      if (photo.url_k) {
+        url = photo.url_k  
+      } else {
+        size = 'b' // no k (2048px) size available
+      }
+    }
+    if (!url) {
+      url = substitute(FLICKR_IMG_URL, {
         id: photo.id,
         server: photo.server,
         size: size,
         secret: size == 'o' ? photo.originalsecret : photo.secret,
         format: size == 'o' ? photo.originalformat : 'jpg'
       })
+    }
+
+    return $(substitute('<a id="photo/{id}" class="photo" target="_blank" href="{href}"><img title="{title}" src="{src}"></img><div class="title">{title}</div></a>', {
+      id: photo.id,
+      href: substitute(FLICKR_PHOTO_URL, {user_id: user_id, id: photo.id}) +
+            (photo.media == 'video' ? '/lightbox' : ''),
+      title: (photo.title.indexOf('IMG_') !== 0) ? photo.title : '',
+      src: url
     }))
   }
 
@@ -83,7 +100,7 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
 
     // Create photo
     // we use the original photo only if we're using > 1300 pixels... otherwise the 1024 scaled image is good enough
-    $photo = create_photo_el(photo, width > 1300 ? 'o' : 'b')
+    $photo = create_photo_el(photo, (width * devicePixelRatio) > 1300 ? 'o' : 'b')
     $img = $photo.find('img').appendTo($lightbox)
       .click(function() { escape_lightbox(); return false; })
       .focus()
@@ -121,15 +138,26 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     if (!loading_photos && !(max_pages !== null && current_page > max_pages)) {
       loading_photos = true
 
+      var extras = options.lightbox ? ['original_format', 'media', 'o_dims'] : []
+      if (retina) extras.push('url_k')
+
       flickr_get('flickr.people.getPublicPhotos', {
         user_id: user_id,
         page: current_page++,
-        extras: options.lightbox ? 'original_format, media, o_dims' : ''
+        extras: extras.join(', ')
       }, function(data) {
         max_pages = data.photos.pages
 
         $(data.photos.photo).each(function(i, photo) {
           var $photo = create_photo_el(photo, options.photo_size).appendTo($el)
+
+          // scale to fit in box
+          scale = Math.min(options.viewer_width / photo.o_width, options.viewer_width / photo.o_height)
+          $photo.find('img').css({
+            width: Math.floor(scale * photo.o_width) + 'px',
+            height: Math.floor(scale * photo.o_height) + 'px'
+          })
+
           if (options.lightbox && photo.media != 'video') {
             $photo.click(function() { show_lightbox(photo); return false; })
           }
