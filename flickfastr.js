@@ -16,6 +16,7 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
   var FLICKR_IMG_URL = 'http://farm9.staticflickr.com/{server}/{id}_{secret}_{size}.{format}'
   var FLICKR_PHOTO_URL = 'http://www.flickr.com/photos/{user_id}/{id}'
   var FLICKR_API_URL = 'http://api.flickr.com/services/rest/?format=json'
+  var LIGHTBOX_EXTRAS = ['original_format', 'media', 'o_dims']
 
   var $el = this, $window = $(window), $document = $(document)
   var user_id = null
@@ -36,7 +37,7 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     var url
     if (size == 'k') {
       if (photo.url_k) {
-        url = photo.url_k  
+        url = photo.url_k
       } else {
         size = 'b' // no k (2048px) size available
       }
@@ -51,16 +52,19 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
       })
     }
 
+    title = (photo.title && photo.title._content) || photo.title
     return $(substitute('<a id="photo/{id}" class="photo" target="_blank" href="{href}"><img title="{title}" src="{src}"></img><div class="title">{title}</div></a>', {
       id: photo.id,
       href: substitute(FLICKR_PHOTO_URL, {user_id: user_id, id: photo.id}) +
             (photo.media == 'video' ? '/lightbox' : ''),
-      title: (photo.title.indexOf('IMG_') !== 0) ? photo.title : '',
+      title: (title && title.indexOf('IMG_') !== 0) ? title : '',
       src: url
     }))
   }
 
   show_lightbox = function(photo) {
+    window.location.hash = 'photo/' + photo.id
+
     // Create lightbox
     $lightbox = $('#flickfastr-lightbox')
     if (!$lightbox.length) {
@@ -82,6 +86,7 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     $('body').css('overflow', 'hidden')
 
     escape_lightbox = function() {
+      window.location.hash = ''
       $lightbox.hide().stop(true).empty()
       $(document).off('keyup', on_key_up)
       $('body').css('overflow', original_body_overflow)
@@ -138,7 +143,7 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     if (!loading_photos && !(max_pages !== null && current_page > max_pages)) {
       loading_photos = true
 
-      var extras = options.lightbox ? ['original_format', 'media', 'o_dims'] : []
+      var extras = options.lightbox ? LIGHTBOX_EXTRAS : []
       if (retina) extras.push('url_k')
 
       flickr_get('flickr.people.getPublicPhotos', {
@@ -180,23 +185,37 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     load_photos()
   }
 
-  switch (options.identifier_type) {
-    case 'user_id':
-      start_for_user_id(identifier)
-      break
-    case 'user_name':
-      flickr_get('flickr.people.findByUsername', {
-        username: identifier
-      }, function(data) {
-        if (data.user.id) {
-          start_for_user_id(data.user.id)
-        } else {
-          $el.text("could not find user name: " + identifier)
-        }
-      })
-      break
-    default:
-      throw "Unsupported identifier type: " + options.identifier_type
+  start = function() {
+    switch (options.identifier_type) {
+      case 'user_id':
+        start_for_user_id(identifier)
+        break
+      case 'user_name':
+        flickr_get('flickr.people.findByUsername', {
+          username: identifier
+        }, function(data) {
+          if (data.user.id) {
+            start_for_user_id(data.user.id)
+          } else {
+            $el.text("could not find user name: " + identifier)
+          }
+        })
+        break
+      default:
+        throw "Unsupported identifier type: " + options.identifier_type
+    }
   }
+
+  if (window.location.hash.match(/^#photo\//)) {
+    var id = window.location.hash.substr(7)
+    flickr_get('flickr.photos.getInfo', {photo_id: id, extras: LIGHTBOX_EXTRAS.join(', ')}, function(data) {
+      debugger
+      show_lightbox(data.photo)
+      start()
+    })
+  } else {
+    start()
+  }
+
   return this
 }
