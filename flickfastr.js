@@ -36,7 +36,7 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     var url
     if (size == 'k') {
       if (photo.url_k) {
-        url = photo.url_k  
+        url = photo.url_k
       } else {
         size = 'b' // no k (2048px) size available
       }
@@ -93,14 +93,22 @@ jQuery.fn.flickfastr = function(identifier, api_key, options) {
     $(document).on('keyup', on_key_up)
 
     // Scale image to fill height
-    original_height = parseInt(photo.o_height, 10)
-    scale = $(window).height() / original_height
-    height = Math.floor(scale * original_height)
-    width = Math.floor(scale * parseInt(photo.o_width, 10))
+    var original_height = parseInt(photo.o_height, 10)
+    var scale = $(window).height() / original_height
+    var height = Math.floor(scale * original_height)
+    var width = Math.floor(scale * parseInt(photo.o_width, 10))
+
+    // Calculate lowest image size that will be decent to display
+    var required_resolution = Math.max(width, height) * devicePixelRatio * 0.8 // allow 20% upscalin g
+    var size = 'o'
+    if (required_resolution <= 1024) {
+      size = 'b'
+    } else if (required_resolution <= 2048) {
+      size = 'k'
+    }
 
     // Create photo
-    // we use the original photo only if we're using > 1300 pixels... otherwise the 1024 scaled image is good enough
-    $photo = create_photo_el(photo, (width * devicePixelRatio) > 1300 ? 'o' : 'b')
+    $photo = create_photo_el(photo, size)
     $img = $photo.find('img').appendTo($lightbox)
       .click(function() { escape_lightbox(); return false; })
       .focus()
