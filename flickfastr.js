@@ -104,18 +104,32 @@ $.fn.flickfastr = function(identifier, api_key, options) {
     $lightbox.empty().show();
 
     var on_key_up = function(e) {
-      // Escape lightbox on 'esc' key
-      if (e.keyCode == 27) {
-        escape_lightbox();
-        return;
+      var increment;
+      switch (e.keyCode) {
+        case 27:
+          // Escape key
+          escape_lightbox();
+          return;
+        case 37:
+        case 38:
+        case 75:
+          // If left or up arrow key or k then we are moving to previous photo
+          increment = -1;
+          break;
+        case 34:
+        case 39:
+        case 74:
+          // If right or down arrow key or j then we are moving to next photo
+          increment = 1;
+          break;
+        default:
+          return;
       }
 
-      // If left or up arrow key or k then we are moving to previous photo
-      var increment =  (e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 75) ? -1 : 1;
       var index = all_photos.indexOf(photo);
-      if (!index) return;
+      if (index < 0) return;
       index += increment;
-      if (index > 0 && index < all_photos.length) {
+      if (index >= 0 && index < all_photos.length) {
         escape_lightbox();
         var photo_next = all_photos[index];
         show_lightbox(photo_next);
@@ -149,12 +163,12 @@ $.fn.flickfastr = function(identifier, api_key, options) {
       appendTo($lightbox).focus();
     $img.css({width: width + 'px', height: height + 'px'});
 
-    $('<a class="view_on_flickr" target="_blank">view on flickr</a>').
+    $('<a class="view_on_flickr" target="_blank">open in flickr</a>').
       attr('href', $photo.attr('href')).
       appendTo($lightbox).
       css({
         position: 'fixed',
-        bottom: '10px',
+        top: '10px',
         right: '20px'
       });
 
