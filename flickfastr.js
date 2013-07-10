@@ -72,17 +72,25 @@ $.fn.flickfastr = function(identifier, api_key, options) {
     // Create lightbox
     var $lightbox = $('#flickfastr-lightbox');
     if (!$lightbox.length) {
-      $lightbox = $('<div id="flickfastr-lightbox"></div>').css({
-        position: 'fixed',
-        'overflow-x': 'scroll',
-        'background-color': 'black',
-        'text-align': 'center',
-        'overflow-y': 'hidden',
-        width: '100%',
-        height: '100%',
-        top: 0,
-        left: 0
-      }).appendTo('body');
+      $lightbox = $('<div id="flickfastr-lightbox"></div>').
+        css({
+          position: 'fixed',
+          'overflow-x': 'scroll',
+          'background-color': 'black',
+          'text-align': 'center',
+          'overflow-y': 'hidden',
+          width: '100%',
+          height: '100%',
+          top: 0,
+          left: 0
+        }).
+        appendTo('body').
+        click(function(e) {
+          if (e.srcElement.nodeName !== 'A') {
+            escape_lightbox();
+            return false;
+          }
+        });
     }
 
     // Disable body scrolling since lightbox is modal
@@ -121,11 +129,7 @@ $.fn.flickfastr = function(identifier, api_key, options) {
     // Create photo
     var $photo = create_photo_el(photo, size);
     var $img = $photo.find('img').
-      appendTo($lightbox).click(function() {
-        escape_lightbox();
-        return false;
-      }).
-      focus();
+      appendTo($lightbox).focus();
     $img.css({width: width + 'px', height: height + 'px'});
 
     $('<a class="view_on_flickr" target="_blank">view on flickr</a>').
@@ -133,8 +137,8 @@ $.fn.flickfastr = function(identifier, api_key, options) {
       appendTo($lightbox).
       css({
         position: 'fixed',
-        bottom: '5px',
-        right: '10px'
+        bottom: '10px',
+        right: '20px'
       });
 
     // Animate panning for Panoramas
