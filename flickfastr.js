@@ -103,12 +103,15 @@ $.fn.flickfastr = function(identifier, api_key, options) {
     var width = Math.floor(scale * parseInt(photo.width, 10));
 
     // Calculate lowest image size that will be decent to display
-    var required_resolution = Math.max(width, height) * devicePixelRatio * 0.8; // allow 20% upscalin g
-    var size = 'o';
+    // allow 30% upscaling
+    var required_resolution = Math.max(width, height) * devicePixelRatio * 0.7; 
+    var size;
     if (required_resolution <= 1024) {
       size = 'b';
     } else if (required_resolution <= 2048) {
       size = 'k';
+    } else {
+      size = 'o';
     }
 
     // Create photo
