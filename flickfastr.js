@@ -26,6 +26,7 @@ $.fn.flickfastr = function(identifier, api_key, options) {
   var current_page = 1;
   var max_pages = null;
   var loading_photos = false;
+  var all_photos = [];
 
   var substitute = function(str, sub) {
     return str.replace(/\{(.+?)\}/g, function($0, $1) { return $1 in sub ? sub[$1] : $0; });
@@ -55,11 +56,9 @@ $.fn.flickfastr = function(identifier, api_key, options) {
       });
     }
  
-    var title =  (photo.title.match(/DSC[0-9]+/) || photo.title.match(/IMG_.*/))
-      ? ''
-      : photo.title;
+    var title =  (photo.title.match(/DSC[0-9]+/) || photo.title.match(/IMG_.*/)) ? '' : photo.title;
 
-    return $(substitute('<a id="photo/{id}" class="photo" target="_blank" href="{href}"><img title="{title}" src="{src}"></img><div class="title">{title}</div></a>', {
+    return $(substitute('<a id="photo_{id}" class="photo" target="_blank" href="{href}"><img title="{title}" src="{src}"></img><div class="title">{title}</div></a>', {
       id: photo.id,
       href: substitute(FLICKR_PHOTO_URL, {user_id: user_id, id: photo.id}) +
             (photo.media == 'video' ? '/lightbox' : ''),
@@ -104,8 +103,26 @@ $.fn.flickfastr = function(identifier, api_key, options) {
     };
     $lightbox.empty().show();
 
-    // Escape lightbox on 'esc' key
-    var on_key_up = function(e) { if (e.keyCode == 27) escape_lightbox(); };
+    var on_key_up = function(e) {
+      // Escape lightbox on 'esc' key
+      if (e.keyCode == 27) {
+        escape_lightbox();
+        return;
+      }
+
+      // If left or up arrow key or k then we are moving to previous photo
+      var increment =  (e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 75) ? -1 : 1;
+      var index = all_photos.indexOf(photo);
+      if (!index) return;
+      index += increment;
+      if (index > 0 && index < all_photos.length) {
+        escape_lightbox();
+        var photo_next = all_photos[index];
+        show_lightbox(photo_next);
+        var $photo = $el.find('.photo#photo_' + photo_next.id);
+        document.body.scrollTop = $photo.offset().top - Math.floor($(window).height() * 0.05);
+      }
+    };
     $(document).on('keyup', on_key_up);
 
     // Scale image to fill height
@@ -175,6 +192,7 @@ $.fn.flickfastr = function(identifier, api_key, options) {
         max_pages = data.photos.pages;
 
         $(data.photos.photo).each(function(i, photo) {
+          all_photos.push(photo);
           var $photo = create_photo_el(photo, options.photo_size).appendTo($el);
 
           // scale to fit in box
