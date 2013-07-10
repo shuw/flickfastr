@@ -54,12 +54,16 @@ $.fn.flickfastr = function(identifier, api_key, options) {
         format: size === 'o' ? photo.originalformat : 'jpg'
       });
     }
+ 
+    var title =  (photo.title.match(/DSC[0-9]+/) || photo.title.match(/IMG_.*/))
+      ? ''
+      : photo.title;
 
     return $(substitute('<a id="photo/{id}" class="photo" target="_blank" href="{href}"><img title="{title}" src="{src}"></img><div class="title">{title}</div></a>', {
       id: photo.id,
       href: substitute(FLICKR_PHOTO_URL, {user_id: user_id, id: photo.id}) +
             (photo.media == 'video' ? '/lightbox' : ''),
-      title: (photo.title.indexOf('IMG_') !== 0) ? photo.title : '',
+      title: title,
       src: url
     }));
   };
