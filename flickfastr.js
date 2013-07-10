@@ -140,18 +140,17 @@ $.fn.flickfastr = function(identifier, api_key, options) {
     $(document).on('keyup', on_key_up);
 
     // Scale image to fill height
-    var original_height = parseInt(photo.height, 10);
-    var scale = $(window).height() / original_height;
-    var height = Math.floor(scale * original_height);
-    var width = Math.floor(scale * parseInt(photo.width, 10));
+    var scale = $(window).height() / photo.height;
+    var height = Math.floor(scale * photo.height);
+    var width = Math.floor(scale * photo.width, 10);
+    var required_resolution = Math.max(width, height) * devicePixelRatio;
 
     // Calculate lowest image size that will be decent to display
-    // allow 30% upscaling
-    var required_resolution = Math.max(width, height) * devicePixelRatio * 0.7; 
+    // allow some upscaling (hence the multiplier)
     var size;
-    if (required_resolution <= 1024) {
+    if (required_resolution <= 1024 * 1.3) {
       size = 'b';
-    } else if (required_resolution <= 2048) {
+    } else if (required_resolution <= 2048 * 1.6) {
       size = 'k';
     } else {
       size = 'o';
@@ -197,7 +196,7 @@ $.fn.flickfastr = function(identifier, api_key, options) {
 
       // loading url_z yields the dimensions for big photos
       // and url_z for videos
-      var extras = ['media', 'url_k', 'url_z'];
+      var extras = ['media', 'url_k', 'url_z', 'original_format'];
       flickr_get('flickr.people.getPublicPhotos', {
         user_id: user_id,
         page: current_page,
