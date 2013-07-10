@@ -17,7 +17,7 @@ $.fn.flickfastr = function(identifier, api_key, options) {
     lightbox: true                      // Whether to open photos using the panorama-enabled lightbox
   }, options);
 
-  var FLICKR_IMG_URL = 'http://farm9.staticflickr.com/{server}/{id}_{secret}_{size}.{format}';
+  var FLICKR_IMG_URL = 'http://farm{farm}.staticflickr.com/{server}/{id}_{secret}_{size}.{format}';
   var FLICKR_PHOTO_URL = 'http://www.flickr.com/photos/{user_id}/{id}';
   var FLICKR_API_URL = 'http://api.flickr.com/services/rest/?format=json';
 
@@ -46,8 +46,10 @@ $.fn.flickfastr = function(identifier, api_key, options) {
         size = 'b'; // no k (2048px) size available
       }
     }
+
     if (!url) {
       url = substitute(FLICKR_IMG_URL, {
+        farm: photo.farm || 1,
         id: photo.id,
         server: photo.server,
         size: size,
