@@ -195,9 +195,9 @@ $.fn.flickfastr = function(identifier, api_key, options) {
     if (!loading_photos && !(max_pages !== null && current_page > max_pages)) {
       loading_photos = true;
 
-      var extras = ['original_format', 'media', 'o_dims', 'dims', 'url_k'];
-      extras.push('url_' + options.photo_size);
-
+      // loading url_z yields the dimensions for big photos
+      // and url_z for videos
+      var extras = ['media', 'url_k', 'url_z'];
       flickr_get('flickr.people.getPublicPhotos', {
         user_id: user_id,
         page: current_page,
@@ -210,8 +210,8 @@ $.fn.flickfastr = function(identifier, api_key, options) {
           var $photo = create_photo_el(photo, options.photo_size).appendTo($el);
 
           // scale to fit in box
-          photo.width = parseInt(photo.width_k, 10);
-          photo.height = parseInt(photo.height_k, 10);
+          photo.width = parseInt(photo.width_k || photo.width_z, 10);
+          photo.height = parseInt(photo.height_k || photo.height_z, 10);
           var scale = Math.min(options.viewer_width / photo.width, options.viewer_width / photo.height);
           if (scale) {
             $photo.find('img').css({
@@ -221,7 +221,6 @@ $.fn.flickfastr = function(identifier, api_key, options) {
           } else {
             $photo.find('img').css({
               width: options.viewer_width + 'px',
-              minHeight: '200px'
             });
           }
 
