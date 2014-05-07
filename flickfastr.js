@@ -12,14 +12,14 @@ $.fn.flickfastr = function(identifier, api_key, options) {
 
   options = $.extend({
     viewer_width: 1024,
-    photo_size: retina ? 'k' : 'b',     // Sizes defined here: http://www.flickr.com/services/api/misc.urls.html
+    photo_size: retina ? 'k' : 'b',     // Sizes defined here: https://www.flickr.com/services/api/misc.urls.html
     identifier_type: 'user_name',       // ['user_id', 'user_name'] supported
     lightbox: true                      // Whether to open photos using the panorama-enabled lightbox
   }, options);
 
-  var FLICKR_IMG_URL = 'http://farm{farm}.staticflickr.com/{server}/{id}_{secret}_{size}.{format}';
-  var FLICKR_PHOTO_URL = 'http://www.flickr.com/photos/{user_id}/{id}';
-  var FLICKR_API_URL = 'http://api.flickr.com/services/rest/?format=json';
+  var FLICKR_IMG_URL = 'https://farm{farm}.staticflickr.com/{server}/{id}_{secret}_{size}.{format}';
+  var FLICKR_PHOTO_URL = 'https://www.flickr.com/photos/{user_id}/{id}';
+  var FLICKR_API_URL = 'https://api.flickr.com/services/rest/?format=json';
 
   var $el = this, $window = $(window), $document = $(document);
   var user_id = null;
