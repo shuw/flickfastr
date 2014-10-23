@@ -87,7 +87,7 @@ $.fn.flickfastr = function(identifier, api_key, options) {
         }).
         appendTo('body').
         click(function(e) {
-          if (e.srcElement.nodeName !== 'A') {
+          if (e.target.nodeName !== 'A') {
             escape_lightbox();
             return false;
           }
